@@ -54,13 +54,15 @@
 	// загружаем текстурку
 	var sprite = PIXI.Sprite.fromImage('tennis-png-1791-48px.png');
 	sprite.position.set(230,264);
+	sprite.interactive = true;
+	stage.addChild(sprite);
 	keyUp.press = function(){
 		sprite.y = sprite.y - speed;
 	};
 	keyDown.press = function(){
 		sprite.y = sprite.y + speed;
 	};
-	stage.addChild(sprite);
+	
 	//keyUp.release();
 	//keyDown.release();
     </script>
