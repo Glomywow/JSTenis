@@ -3,130 +3,59 @@
     <meta charset="utf-8"/>
     <title>Simple JS Game</title>
     <script src="https://code.jquery.com/jquery-3.0.0.slim.min.js" type="text/javascript"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.11/pixi.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.11/pixi.min.js" type="text/javascript"></script>
   </head>
   <body>
-    	<script>
-			// first tile picked up by the player
-			var firstTile=null;
-			// second tile picked up by the player
-			var secondTile=null;
-			// can the player pick up a tile?
-			var canPick=true;
-			// create an new instance of a pixi stage with a grey background
-			var stage = new PIXI.Stage(0x888888);
-			// create a renderer instance width=640 height=480
-			var renderer = PIXI.autoDetectRenderer(640,480);
-			// importing a texture atlas created with texturepacker
-			var tileAtlas = ["images.json"];
-			// create a new loader
-			var loader = new PIXI.AssetLoader(tileAtlas);
-			// create an empty container
-			var gameContainer = new PIXI.DisplayObjectContainer();
-			// add the container to the stage
-     		stage.addChild(gameContainer);
-     		// add the renderer view element to the DOM
-			document.body.appendChild(renderer.view);
-			// use callback
-			loader.onComplete = onTilesLoaded
-			//begin load
-			loader.load();	
-			function onTilesLoaded(){
-				// choose 24 random tile images
-				var chosenTiles=new Array();
-				while(chosenTiles.length<48){
-					var candidate=Math.floor(Math.random()*44);
-					if(chosenTiles.indexOf(candidate)==-1){
-						chosenTiles.push(candidate,candidate)
-					}			
-				}
-				// shuffle the chosen tiles
-				for(i=0;i<96;i++){
-					var from = Math.floor(Math.random()*48);
-					var to = Math.floor(Math.random()*48);
-					var tmp = chosenTiles[from];
-					chosenTiles[from]=chosenTiles[to];
-					chosenTiles[to]=tmp;
-				}
-				// place down tiles
-				for(i=0;i<8;i++){
-					for(j=0;j<6;j++){
-						// new sprite
-						var tile = PIXI.Sprite.fromFrame(chosenTiles[i*6+j]);
-						// buttonmode+interactive = acts like a button
-						tile.buttonMode=true;
-						tile.interactive = true;
-						// is the tile selected?
-						tile.isSelected=false;
-						// set a tile value
-						tile.theVal=chosenTiles[i*6+j]
-						// place the tile
-						tile.position.x = 7+i*80;
-						tile.position.y = 7+  j*80;
-						// paint tile black
-						tile.tint = 0x000000;
-						// set it a bit transparent (it will look grey)
-						tile.alpha=0.5;
-						// add the tile
-						gameContainer.addChild(tile);
-						// mouse-touch listener
-						tile.mousedown = tile.touchstart = function(data){
-							// can I pick a tile?
-							if(canPick) {
-							     // is the tile already selected?
-								if(!this.isSelected){
-									// set the tile to selected
-									this.isSelected = true;
-									// show the tile
-				      				this.tint = 0xffffff;
-									this.alpha = 1;
-									// is it the first tile we uncover?
-									if(firstTile==null){
-										firstTile=this
-									}
-									// this is the second tile
-									else{
-										secondTile=this
-										// can't pick anymore
-										canPick=false;
-										// did we pick the same tiles?
-										if(firstTile.theVal==secondTile.theVal){
-											// wait a second then remove the tiles and make the player able to pick again
-											setTimeout(function(){
-												gameContainer.removeChild(firstTile);
-												gameContainer.removeChild(secondTile);
-												firstTile=null;
-												secondTile=null;
-												canPick=true;
-											},1000);
-										}
-										// we picked different tiles
-										else{
-											// wait a second then cover the tiles and make the player able to pick again
-								 			setTimeout(function(){
-								 				firstTile.isSelected=false
-								 				secondTile.isSelected=false
-								 				firstTile.tint = 0x000000;
-								 				secondTile.tint = 0x000000;
-								 				firstTile.alpha=0.5;
-								 				secondTile.alpha=0.5;
-								 				firstTile=null;
-												secondTile=null;
-												canPick=true	
-								 			},1000);
-										}
-									}	
-								}
-							}
-						}
-					}
-				} 
-				requestAnimFrame(animate);
-			}
-			function animate() {
-				requestAnimFrame(animate);
-				renderer.render(stage);
-			}
-		</script>
+    <script>
+    	var renderer = PIXI.autoDetectRenderer(800, 600, { antialias: true });
+	document.body.appendChild(renderer.view);
+	
+	// create the root of the scene graph
+	var stage = new PIXI.Container();
+	
+	stage.interactive = true;
+	
+	var graphics = new PIXI.Graphics();
+	
+	// set a fill and line style
+	graphics.beginFill(0xFF3300);
+	graphics.lineStyle(4, 0xffd900, 1);
+	
+	// draw a shape
+	graphics.moveTo(50,50);
+	graphics.lineTo(250, 50);
+	graphics.lineTo(100, 100);
+	graphics.lineTo(50, 50);
+	graphics.endFill();
+	
+	// set a fill and a line style again and draw a rectangle
+	graphics.lineStyle(2, 0x0000FF, 1);
+	graphics.beginFill(0xFF700B, 1);
+	graphics.drawRect(50, 250, 120, 120);
+	
+	// draw a rounded rectangle
+	graphics.lineStyle(2, 0xFF00FF, 1);
+	graphics.beginFill(0xFF00BB, 0.25);
+	graphics.drawRoundedRect(150, 450, 300, 100, 15);
+	graphics.endFill();
+	
+	// draw a circle, set the lineStyle to zero so the circle doesn't have an outline
+	graphics.lineStyle(0);
+	graphics.beginFill(0xFFFF0B, 0.5);
+	graphics.drawCircle(470, 90,60);
+	graphics.endFill();
+	
+	
+	stage.addChild(graphics);
+	
+	// run the render loop
+	animate();
+	
+	function animate() {
+	
+	    renderer.render(stage);
+	    requestAnimationFrame( animate );
+	}	
+    </script>
   </body>
 </html>
